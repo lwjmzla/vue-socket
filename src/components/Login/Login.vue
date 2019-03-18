@@ -34,6 +34,9 @@ export default {
     //   return this.$store.state.isShowAbout;
     // }
   },
+  activated () {
+    this.name = ''
+  },
   methods: {
     login(ev) {
       if (this.name === '') {

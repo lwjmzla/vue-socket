@@ -1,6 +1,6 @@
 <template lang="html">
 
-  <transition name="slide-left">
+  <!-- <transition name="slide-left"> -->
     <div class="chatting">
 
       <!-- 聊天界面头部 -->
@@ -75,7 +75,7 @@
       </div>
 
     </div>
-  </transition>
+  <!-- </transition> -->
 
 </template>
 
@@ -92,7 +92,8 @@ export default {
       oTextarea: {},
       // emojis: ['😂', '🙏', '😄', '😏', '😇', '😅', '😌', '😘', '😍', '🤓', '😜', '😎', '😊', '😳', '🙄', '😱', '😒', '😔', '😷', '👿', '🤗', '😩', '😤', '😣', '😰', '😴', '😬', '😭', '👻', '👍', '✌️', '👉', '👀', '🐶', '🐷', '😹', '⚡️', '🔥', '🌈', '🍏', '⚽️', '❤️', '🇨🇳'],
       isShowEmoji: false,
-      isRedAI: false
+      isRedAI: false,
+      firstLoad: true
     }
   },
   watch: {
@@ -115,7 +116,17 @@ export default {
       next();
     }
   },
+  activated () {
+    if (!this.firstLoad) {
+      socket.emit('online', this.$store.state.name); // ! 上传用户名字  通知其他人 本人上线了
+      this.oContent = document.querySelector('.chatting-content');
+      this.oContent.scrollTop = this.oContent.scrollHeight; // !可以根据localstorage的 内容，自动到底部
+    }
+  },
   mounted() {
+    setTimeout(() => {
+      this.firstLoad = false
+    }, 0)
     this.oContent = document.querySelector('.chatting-content');
     this.oContent.scrollTop = this.oContent.scrollHeight; // !可以根据localstorage的 内容，自动到底部
     this.oTextarea = document.querySelector('textarea');

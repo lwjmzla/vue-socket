@@ -7,6 +7,7 @@ import moment from 'moment';
 import Vuex from 'vuex';
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import './common/style/base.scss'
 
 // 本地化，中文时间显示
 moment.locale('zh-cn');
