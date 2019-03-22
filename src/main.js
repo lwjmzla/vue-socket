@@ -8,6 +8,8 @@ import Vuex from 'vuex';
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import './common/style/base.scss'
+import VueSocketio from 'vue-socket.io';
+Vue.use(VueSocketio, 'http://120.79.57.19:3334/');
 
 // 本地化，中文时间显示
 moment.locale('zh-cn');
@@ -21,6 +23,7 @@ Vue.use(Vuex);
 
 // axios
 Vue.use(VueAxios, axios);
+
 
 const store = new Vuex.Store({
   state: {
@@ -51,6 +54,11 @@ new Vue({
   el: '#app',
   router,
   store,
+  sockets:{
+    connect: function(){
+      console.log('socket connected')
+    }
+  },
   template: '<App/>',
   components: { App }
 })

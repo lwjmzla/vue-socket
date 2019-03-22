@@ -118,10 +118,30 @@ export default {
   },
   activated () {
     if (!this.firstLoad) {
-      socket.emit('online', this.$store.state.name); // ! 上传用户名字  通知其他人 本人上线了
+      this.$socket.emit('online', this.$store.state.name); // ! 上传用户名字  通知其他人 本人上线了
       this.oContent = document.querySelector('.chatting-content');
       this.oContent.scrollTop = this.oContent.scrollHeight; // !可以根据localstorage的 内容，自动到底部
     }
+  },
+  sockets:{   
+    online: function(name){  /*接受服务器广播过来的addcart*/
+      console.log('online')
+      if (!name) {
+        return;
+      }
+      let oOnline = document.createElement('div');
+      oOnline.className = 'online';
+      oOnline.innerText = name + '上线了';
+      this.oContent.appendChild(oOnline);
+      this.oContent.scrollTop = this.oContent.scrollHeight;
+    },
+    receiveGroupMsg (data) {
+      console.log(data)
+      this.msgs.push(data);
+      setTimeout(() => {
+        this.oContent.scrollTop = this.oContent.scrollHeight;
+      }, 0);
+    }      
   },
   mounted() {
     setTimeout(() => {
@@ -131,28 +151,7 @@ export default {
     this.oContent.scrollTop = this.oContent.scrollHeight; // !可以根据localstorage的 内容，自动到底部
     this.oTextarea = document.querySelector('textarea');
 
-    socket.emit('online', this.$store.state.name); // ! 上传用户名字  通知其他人 本人上线了
-
-    socket.on('online', (name) => { // !接收其他人的上线信息
-      if (!name) {
-        return;
-      }
-      let oOnline = document.createElement('div');
-      oOnline.className = 'online';
-      oOnline.innerText = name + '上线了';
-      this.oContent.appendChild(oOnline);
-      this.oContent.scrollTop = this.oContent.scrollHeight;
-
-
-    });
-    // !接收群聊消息  只接收别人的，不会接收自己发的
-    socket.on('receiveGroupMsg', data => {
-      console.log(data)
-      this.msgs.push(data);
-      setTimeout(() => {
-        this.oContent.scrollTop = this.oContent.scrollHeight;
-      }, 0);
-    });
+    this.$socket.emit('online', this.$store.state.name); // ! 上传用户名字  通知其他人 本人上线了
 
     // this.oContent.scrollTop = this.oContent.scrollHeight;
 
@@ -174,7 +173,7 @@ export default {
       if (this.inputContent === '') {
         return;
       } else {
-        socket.emit('sendGroupMsg', {
+        this.$socket.emit('sendGroupMsg', {
           date: this.moment().format('YYYY-MM-DD HH:mm:ss'),
           loc: localStorage.addr,
           from: `${localStorage.name}`,
